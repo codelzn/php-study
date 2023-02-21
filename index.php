@@ -25,7 +25,7 @@ class Task
   }
   public function getAllTasks()
   {
-    $sql = "SELECT * FROM todolist ORDER BY 終了予定日";
+    $sql = "SELECT * FROM todolist ORDER BY enddate DESC";
     $result = $this->conn->query($sql);
     if (!$result) {
       die("Query Failed");
@@ -38,7 +38,7 @@ class Task
     $id = $length + 1;
     $name = $_POST["name"];
     $due_date = $_POST["due_date"];
-    $sql = "INSERT INTO `todolist` (`Id`, `タスク名`, `終了予定日`, `終了チェック`) VALUES ('$id', '$name', '$due_date', '0')";
+    $sql = "INSERT INTO `todolist` (`id`, `taskname`, `enddate`, `state`) VALUES ('$id', '$name', '$due_date', '0')";
     $result = $this->conn->query($sql);
     if (!$result) {
       die("Query Failed");
@@ -49,7 +49,7 @@ class Task
   public function setDone()
   {
     $id = $_POST["done"];
-    $sql = "UPDATE `todolist` SET `終了チェック` = '1' WHERE `todolist`.`Id` = '$id'";
+    $sql = "UPDATE `todolist` SET `state` = '1' WHERE `todolist`.`id` = '$id'";
     $result = $this->conn->query($sql);
     if (!$result) {
       die("Query Failed");
@@ -60,7 +60,7 @@ class Task
   public function setUndone()
   {
     $id = $_POST["undone"];
-    $sql = "UPDATE `todolist` SET `終了チェック` = '0' WHERE `todolist`.`Id` = '$id'";
+    $sql = "UPDATE `todolist` SET `state` = '0' WHERE `todolist`.`id` = '$id'";
     $result = $this->conn->query($sql);
     if (!$result) {
       die("Query Failed");
@@ -150,21 +150,21 @@ if (isset($_POST["undone"])) {
     if ($result->num_rows > 0) {
       while ($row = $result->fetch_assoc()) {
         echo "<tr>";
-        echo "<td>" . $row["Id"] . "</td>";
-        echo "<td>" . $row["タスク名"] . "</td>";
-        echo "<td>" . $row["終了予定日"] . "</td>";
-        if ($row["終了チェック"] == 1) {
+        echo "<td>" . $row["id"] . "</td>";
+        echo "<td>" . $row["taskname"] . "</td>";
+        echo "<td>" . $row["enddate"] . "</td>";
+        if ($row["state"] == 1) {
           echo "<td>
           <input type='checkbox' name='done' value='1' checked>
           <form method='POST'>
-              <button type='submit' name='undone' value='" . $row["Id"] . "'>キャンセル</button>
+              <button type='submit' name='undone' value='" . $row["id"] . "'>キャンセル</button>
             </form>
           </td>";
         } else {
           echo "<td class='setDone'>
           <input type='checkbox' name='done' value='0'>
             <form method='POST'>
-              <button type='submit' name='done' value='" . $row["Id"] . "'>完了</button>
+              <button type='submit' name='done' value='" . $row["id"] . "'>完了</button>
             </form>
           </td>";
         }
